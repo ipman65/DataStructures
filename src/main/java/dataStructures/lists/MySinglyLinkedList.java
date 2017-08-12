@@ -54,8 +54,13 @@ public class MySinglyLinkedList<T> implements SimpleLinkedList<T>{
 
     public int indexOf(T data){
         if(isEmpty()) return -1;
+        // replace preconditions with requireNonNull since it is more readable.
         data = preconditions(data);
         Node<T> node = head;
+        // becarefull when calling function in the loop, why not reference size var directly?
+        // this function is weird! what is the contract to the user if item is not found? would it return -1 or throw exception?
+        // is exception appropriate in this case? If you throw exception, it means that the data is expected to be in the list
+        // therefore, if the item does not exist, exception is thrown. Does it make sense in this case
         for(int i = 0; i < getSize(); i++){
             if(node.data.equals(data)) return i;
             node = node.next;
@@ -64,7 +69,9 @@ public class MySinglyLinkedList<T> implements SimpleLinkedList<T>{
     }
 
     public void insertTail(T data){
+         // again remove precondition funciton here 
         data = preconditions(data);
+        // this logic is weird. If it is empty, you insertFront() why should you go on and then check isEmpty again?
         if (isEmpty()) insertFront(data);
         Node<T> node = Node.create(data);
         size++;
@@ -81,9 +88,26 @@ public class MySinglyLinkedList<T> implements SimpleLinkedList<T>{
     public void insertAtPos(T data, int pos){
         data = preconditions(data);
         pos = preconditions(pos);
+        // try to avoid multiple if...else if... else since it is not readable.
+        // do:
+        //    if (...) { 
+        //       insertFront(...);
+        //       return;
+        //     }
+        //
+        //     if (pos ==...) {
+        //        inserTail
+        //        return;
+        //     }
+        //
+        //     /// else...
+        
         if(pos == 0) insertFront(data);
         else if(pos == getSize()) insertTail(data);
         else {
+            // Logic is more readable if you do:
+            // while(..) to scan for the position and find the node at pos first
+            // then insert.
             Node<T> node = Node.create(data);
             Node<T> temp = head;
             Node<T> n = temp.next;
@@ -101,6 +125,7 @@ public class MySinglyLinkedList<T> implements SimpleLinkedList<T>{
         if(isEmpty()) throw new IllegalArgumentException("this List is empty");
         data = preconditions(data);
         Node<T> node = head;
+        // this logic is insufficient. What happen if you only have one node? also what happen if deleted node is head or tail? 
         while(node != null){
             Node<T> temp = node.next;
             if(temp.data == data){
@@ -120,6 +145,8 @@ public class MySinglyLinkedList<T> implements SimpleLinkedList<T>{
             current = current.next;
             trail = trail.next;
         }
+        // did you for get to decrement size?
+        // also try if list only have 1 element, delete pos = 0 or pos = size-1
         trail = current.next;
     }
 
@@ -145,6 +172,9 @@ public class MySinglyLinkedList<T> implements SimpleLinkedList<T>{
     }
 
     private int preconditions(final int size){
+        // what are you checking? what is 'size'? is it position in the list? If it is a list index, then it should be between
+        // 0 and size - 1. 
+        // I believe this check is wrong.
         if(size < 0 || size > getSize()) throw new IndexOutOfBoundsException("required: pos >= 0 && pos <= " + getSize());
         else return size;
     }
