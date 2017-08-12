@@ -8,6 +8,7 @@ public class MySinglyLinkedList<T> implements SimpleLinkedList<T>{
 
         T data;
         Node<T> next;
+        // What is k? I don't see it is used any
         Object k;
 
         static <T> Node<T> create(T data) {
@@ -140,6 +141,7 @@ public class MySinglyLinkedList<T> implements SimpleLinkedList<T>{
         return tail.next.equals(head);
     }
 
+    // You don't need this function since requireNonNull is more readable.
     private T preconditions(final T data){
         return requireNonNull(data, "data cannot be null");
     }
